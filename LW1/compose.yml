@@ -1,0 +1,11 @@
+services:
+  server:
+    build: . 
+    environment:
+      - API_KEY=КрутойКлюч # ключ в общем доступе
+    volumes:
+      - ./my_data:/artifacts/data # Относительный путь, при перемещении в другую папку volume создастся новый
+    
+  app:
+    image: python # Образ без тега
+

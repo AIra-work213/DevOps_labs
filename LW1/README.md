@@ -1,0 +1,49 @@
+[Плохой Dockerfile](./Dockerfile)  
+ - Плохо: using full image  
+ (Слишком большой размер, критично для небольших серверов, да и вообще большие образы дольше ставятся)
+ - Плохо: using latest tag  
+ (Не гарантирует совместимость для последней версии, после выхода новых latest)
+ - Плохо: Don't set a working directory  
+ (Работаем из корня контейнера, что не совсем корректно)
+ - Плохо: Copying everything and after running install dependencies  
+ (Докер не сможет кэшировано собирать, ему придется при малейшем изменении файлов, заново устанавливать тяжелые зависимости)
+
+[Хороший Dockerfile](./Dockerfile.good)  
+### Как исправил:
+ - Использую python:3.12-slim (Конкретная версия и тег)
+ - Установил рабочую директорию: `WORKDIR /app`
+ - Копираю только файл с зависимостями, а после установки и все остальное
+  
+
+[Плохой compose](./compose.yml)
+```YAML
+services:
+  server:
+    build: . 
+    environment:
+      - API_KEY=КрутойКлюч # ключ в общем доступе
+    volumes:
+      - ./my_data:/artifacts/data # Относительный путь, при перемещении в другую папку volume создастся новый
+    
+  app:
+    image: python # Образ без тега
+```
+
+[Хороший compose](./compose.good.yml)
+```YAML
+services:
+  server:
+    build: .
+    image: builded-server-image
+    env_file: .env # Используем конкретный файл с перменными окружения
+    
+    volumes:
+      - server_data:/artifacts/data # Используем не путь, а хранилище докера для volumes
+    
+  app:
+    image: python:3.12-slim # Используем конкретный путь
+
+volumes:
+  server_data:
+
+```

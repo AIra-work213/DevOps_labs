@@ -1,0 +1,15 @@
+services:
+  server:
+    build: .
+    image: builded-server-image
+    env_file: .env # Используем конкретный файл с перменными окружения
+    
+    volumes:
+      - server_data:/artifacts/data # Используем не путь, а хранилище докера для volumes
+    
+  app:
+    image: python:3.12-slim # Используем конкретный путь
+
+volumes:
+  server_data:
+
